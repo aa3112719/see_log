@@ -1,0 +1,12 @@
+{
+  "name": "see_log",
+  "outputfilename": "see_log",
+  "assetdir": "frontend/dist",
+  "wailsjsdir": "frontend/src",
+  "frontend:install": "npm install",
+  "frontend:build": "npm run build",
+  "author": {
+    "name": "Piii",
+    "email": "lee"
+  }
+}
