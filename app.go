@@ -4,7 +4,9 @@ import (
 	"context"
 	"fmt"
 	"github.com/wailsapp/wails/v2/pkg/runtime"
+	"io"
 	"io/ioutil"
+	"os"
 )
 
 // App struct
@@ -56,10 +58,65 @@ func (a *App) Greet(name string) []string {
 	return outputlist
 }
 
-func (a *App) FileInfo(name string) string {
-	fileInfo, err := ioutil.ReadFile(fmt.Sprintf("%s/%s", a.selection, name))
+func (a *App) FileInfo() []string {
+	selection, err := runtime.OpenFileDialog(a.ctx, runtime.OpenDialogOptions{
+		Title: "Select Dir",
+	})
 	if err != nil {
 		fmt.Println(err)
 	}
-	return fmt.Sprintf("%s", string(fileInfo))
+	//打开文件
+	file, err := os.Open(selection)
+	if err != nil {
+		fmt.Println(err)
+	}
+
+	defer file.Close()
+	buff := make([]byte, 0, 4096)
+	char := make([]byte, 1)
+	var outStr []string
+
+	// 查询文件大小
+	stat, _ := file.Stat()
+	filesize := stat.Size()
+
+	var cursor int64 = 0
+	cnt := 0
+	for {
+		cursor -= 1
+		_, _ = file.Seek(cursor, io.SeekEnd)
+		_, err = file.Read(char)
+		if err != nil {
+			panic(err)
+		}
+
+		if char[0] == '\n' {
+			if len(buff) > 0 {
+				revers(buff)
+				// 读取到的行
+				outStr = append(outStr, string(buff))
+				cnt++
+				if cnt == 300 {
+					// 超过数量退出
+					break
+				}
+
+			}
+			buff = buff[:0]
+		} else {
+			buff = append(buff, char[0])
+		}
+
+		if cursor == -filesize {
+			break
+		}
+	}
+
+	return outStr
+}
+
+func revers(s []byte) {
+	for i, j := 0, len(s)-1; i < j; i, j = i+1, j-1 {
+		s[i], s[j] = s[j], s[i]
+	}
 }

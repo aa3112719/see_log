@@ -1,18 +1,16 @@
 <template>
-  <div style="display: flex; justify-content: center; align-items: center; height: 100vh; color: white">
-    <a-list>
-      <a-list-item v-for="item in result">
-        {{ item }}
-      </a-list-item>
-    </a-list>
-<!--  <div class="result" v-for="item in result">-->
-<!--    {{ item }}-->
-<!--  </div>-->
-    <div class="input-box" id="input" data-wails-no-drag>
-      <button class="btn" @click="greet()">Greet</button>
-      <button class="btn" @click="fileInfo">Greet</button>
-    </div>
-    </div>
+  <a-layout class="layout">
+    <a-layout-header>
+      <a-button class="btn" @click="fileInfo">选择文件</a-button>
+    </a-layout-header>
+    <a-layout style="padding: 0 24px">
+      <a-layout-content>
+        <a-typography-text :type="formatTypeByTxt(item)" v-for="item in result">
+          {{ item }}
+        </a-typography-text>
+      </a-layout-content>
+    </a-layout>
+  </a-layout>
 </template>
 
 <script setup lang="ts">
@@ -29,13 +27,25 @@ const greet = () => {
 }
 
 const fileInfo = () => {
-  window.go.main.App.FileInfo(result.value[0]).then((res: any) => {
-    console.log(res)
+  window.go.main.App.FileInfo().then((res: any) => {
+    result.value = res
+  }).catch((err: any) => {
+    console.log(err)
   })
+}
+
+const formatTypeByTxt = (txt: string) => {
+  if (txt.indexOf('error') !== -1) return 'danger'
+  if (txt.indexOf('info') !== -1) return 'success'
 }
 </script>
 
 <style>
+.layout {
+  width: 100%;
+  height: 100%;
+}
+
 .logos {
   display: flex;
   justify-content: space-around;
@@ -99,5 +109,14 @@ const fileInfo = () => {
 .input-box .input:focus {
   border: none;
   background-color: rgba(255, 255, 255, 1);
+}
+
+
+.layout-content {
+  min-width: 1024px;
+  min-height: 100vh;
+  overflow-y: hidden;
+  background-color: var(--color-fill-2);
+  transition: all 0.2s cubic-bezier(0.34, 0.69, 0.1, 1);
 }
 </style>
