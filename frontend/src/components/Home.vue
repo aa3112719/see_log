@@ -1,29 +1,37 @@
 <template>
-  <div style="display: flex; justify-content: center; align-items: center; height: 100vh">
-  <div class="result" id="result">{{ result }}</div>
+  <div style="display: flex; justify-content: center; align-items: center; height: 100vh; color: white">
+    <a-list>
+      <a-list-item v-for="item in result">
+        {{ item }}
+      </a-list-item>
+    </a-list>
+<!--  <div class="result" v-for="item in result">-->
+<!--    {{ item }}-->
+<!--  </div>-->
     <div class="input-box" id="input" data-wails-no-drag>
-      <input class="input" v-model="name" type="text" autocomplete="off">
       <button class="btn" @click="greet()">Greet</button>
+      <button class="btn" @click="fileInfo">Greet</button>
     </div>
     </div>
 </template>
 
 <script setup lang="ts">
-// This template is using Vue 3 <script setup> SFCs
-// Check out https://v3.vuejs.org/api/sfc-script-setup.html#sfc-script-setup
 import { ref } from 'vue'
 
-const result = ref("Please enter your name below 👇")
+const result = ref([])
 const name = ref("")
 
 const greet = () => {
   window.go.main.App.Greet(name.value).then(response => {
     result.value = response
+    console.log(response)
   })
 }
 
-const link = (link: string) => {
-  window.runtime.BrowserOpenURL(link)
+const fileInfo = () => {
+  window.go.main.App.FileInfo(result.value[0]).then((res: any) => {
+    console.log(res)
+  })
 }
 </script>
 
