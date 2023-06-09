@@ -1,23 +1,33 @@
 <template>
   <a-layout class="layout">
-    <a-layout-header>
-      <a-button class="btn" @click="fileInfo">选择文件</a-button>
+    <a-layout-header style="padding: 24px">
+      <a-space>
+        <a-button class="btn" @click="fileInfo">选择文件</a-button>
+        <a-typography-text >{{ selection }} </a-typography-text>
+        <a-spin v-if="loading"/>
+      </a-space>
     </a-layout-header>
     <a-layout style="padding: 0 24px">
       <a-layout-content>
-        <a-typography-text :type="formatTypeByTxt(item)" v-for="item in result">
-          {{ item }}
-        </a-typography-text>
+        <a-scrollbar style="height: 600px; width: 100%;overflow: hidden;">
+          <a-space direction="vertical" :size="10">
+            <a-typography-text :type="formatTypeByTxt(item)" v-for="item in result">
+              <span style="word-break: break-all">{{ item }}</span>
+            </a-typography-text>
+          </a-space>
+        </a-scrollbar>
       </a-layout-content>
     </a-layout>
   </a-layout>
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
+import {onUnmounted, ref} from 'vue'
+import useLoading from "../hooks/useLoading";
 
 const result = ref([])
 const name = ref("")
+const selection = ref("")
 
 const greet = () => {
   window.go.main.App.Greet(name.value).then(response => {
@@ -25,18 +35,42 @@ const greet = () => {
     console.log(response)
   })
 }
+let fileInfoTimer = ref()
+
+const {
+    loading,
+    setLoading,
+} = useLoading()
 
 const fileInfo = () => {
   window.go.main.App.FileInfo().then((res: any) => {
-    result.value = res
+    selection.value = res
+    if(!!res) {
+      fileInfoTimer.value = setInterval(() => {
+        getFileStr()
+      }, 2000)
+    }
   }).catch((err: any) => {
     console.log(err)
   })
 }
 
+const getFileStr = () => {
+  setLoading(true)
+  window.go.main.App.GetFileStr().then((res: any) => {
+    result.value = res
+  }).finally(() => {
+    setLoading(false)
+  })
+}
+
+onUnmounted(() => {
+  clearInterval(fileInfoTimer.value)
+})
+
 const formatTypeByTxt = (txt: string) => {
-  if (txt.indexOf('error') !== -1) return 'danger'
-  if (txt.indexOf('info') !== -1) return 'success'
+  if (txt.indexOf('[error]') !== -1) return 'danger'
+  if (txt.indexOf('[info]') !== -1) return 'success'
 }
 </script>
 

@@ -6,6 +6,10 @@ export function FileInfo() {
   return window['go']['main']['App']['FileInfo']();
 }
 
+export function GetFileStr() {
+  return window['go']['main']['App']['GetFileStr']();
+}
+
 export function Greet(arg1) {
   return window['go']['main']['App']['Greet'](arg1);
 }

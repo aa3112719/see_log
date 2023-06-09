@@ -58,15 +58,35 @@ func (a *App) Greet(name string) []string {
 	return outputlist
 }
 
-func (a *App) FileInfo() []string {
+func (a *App) FileInfo() string {
 	selection, err := runtime.OpenFileDialog(a.ctx, runtime.OpenDialogOptions{
-		Title: "Select Dir",
+		Title: "Select Log File",
 	})
 	if err != nil {
 		fmt.Println(err)
+		return ""
+	}
+	a.selection = selection
+	return selection
+}
+
+func revers(s []byte) {
+	for i, j := 0, len(s)-1; i < j; i, j = i+1, j-1 {
+		s[i], s[j] = s[j], s[i]
+	}
+}
+
+type FileStrStruct struct {
+	selection string   `json:"selection"`
+	data      []string `json:"data"`
+}
+
+func (a *App) GetFileStr() []string {
+	if a.selection == "" {
+		return make([]string, 1)
 	}
 	//打开文件
-	file, err := os.Open(selection)
+	file, err := os.Open(a.selection)
 	if err != nil {
 		fmt.Println(err)
 	}
@@ -90,17 +110,16 @@ func (a *App) FileInfo() []string {
 			panic(err)
 		}
 
-		if char[0] == '\n' {
+		if char[0] == '\n' || char[0] == '\r' {
 			if len(buff) > 0 {
 				revers(buff)
 				// 读取到的行
 				outStr = append(outStr, string(buff))
 				cnt++
-				if cnt == 300 {
+				if cnt == 100 {
 					// 超过数量退出
 					break
 				}
-
 			}
 			buff = buff[:0]
 		} else {
@@ -113,10 +132,4 @@ func (a *App) FileInfo() []string {
 	}
 
 	return outStr
-}
-
-func revers(s []byte) {
-	for i, j := 0, len(s)-1; i < j; i, j = i+1, j-1 {
-		s[i], s[j] = s[j], s[i]
-	}
 }
