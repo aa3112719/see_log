@@ -2,3 +2,7 @@ frontend/node_modules
 frontend/dist
 build
 .idea
+.vscode
+frontend/src/wailsjs
+frontend/src/wailsjs/go/main/App.d.ts
+frontend/src/wailsjs/go/main/App.js

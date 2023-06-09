@@ -3,6 +3,6 @@
 
 export function FileInfo():Promise<string>;
 
-export function GetFileStr():Promise<Array<string>>;
+export function GetFileStr(arg1:number):Promise<Array<string>>;
 
 export function Greet(arg1:string):Promise<Array<string>>;

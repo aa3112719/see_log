@@ -81,7 +81,7 @@ type FileStrStruct struct {
 	data      []string `json:"data"`
 }
 
-func (a *App) GetFileStr() []string {
+func (a *App) GetFileStr(num int) []string {
 	if a.selection == "" {
 		return make([]string, 1)
 	}
@@ -116,7 +116,7 @@ func (a *App) GetFileStr() []string {
 				// 读取到的行
 				outStr = append(outStr, string(buff))
 				cnt++
-				if cnt == 100 {
+				if cnt == num {
 					// 超过数量退出
 					break
 				}
