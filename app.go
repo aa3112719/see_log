@@ -125,7 +125,6 @@ func (a *App) GetFileStr() []string {
 		} else {
 			buff = append(buff, char[0])
 		}
-
 		if cursor == -filesize {
 			break
 		}

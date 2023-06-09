@@ -1,15 +1,21 @@
 <template>
   <a-layout class="layout">
     <a-layout-header style="padding: 24px">
-      <a-space>
-        <a-button class="btn" @click="fileInfo">选择文件</a-button>
-        <a-typography-text >{{ selection }} </a-typography-text>
-        <a-spin v-if="loading"/>
-      </a-space>
+      <a-row :gutter="2">
+        <a-col :xl="6" :xs="6">
+          <a-button class="btn" @click="fileInfo">选择文件</a-button>
+        </a-col>
+        <a-col :xl="18" :xs="14">
+          <a-typography-paragraph style="width: 100%; overflow: hidden; white-space: nowrap; text-overflow: ellipsis" :ellipsis="{rows: 1}">
+            {{ selection }}
+          </a-typography-paragraph>
+        </a-col>
+        <a-col :span="2"><a-spin v-if="loading"/></a-col>
+      </a-row>
     </a-layout-header>
     <a-layout style="padding: 0 24px">
       <a-layout-content>
-        <a-scrollbar style="height: 600px; width: 100%;overflow: hidden;">
+        <a-scrollbar style="height: 600px; width: 100%;overflow: auto;" :outer-style="{'max-height': '1200px'}">
           <a-space direction="vertical" :size="10">
             <a-typography-text :type="formatTypeByTxt(item)" v-for="item in result">
               <span style="word-break: break-all">{{ item }}</span>
@@ -46,6 +52,7 @@ const fileInfo = () => {
   window.go.main.App.FileInfo().then((res: any) => {
     selection.value = res
     if(!!res) {
+      setLoading(true)
       fileInfoTimer.value = setInterval(() => {
         getFileStr()
       }, 2000)
@@ -56,7 +63,6 @@ const fileInfo = () => {
 }
 
 const getFileStr = () => {
-  setLoading(true)
   window.go.main.App.GetFileStr().then((res: any) => {
     result.value = res
   }).finally(() => {
